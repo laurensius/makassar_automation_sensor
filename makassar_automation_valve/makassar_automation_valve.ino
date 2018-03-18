@@ -19,6 +19,8 @@ IPAddress ip(192, 168, 3, 177);
 EthernetClient myEthernet;
 
 int relayPin = 7;
+boolean startRead = false; 
+char inString[32];
 
 void setup() {
   // Open serial communications and wait for port to open:
@@ -38,7 +40,7 @@ void setup() {
   Serial.println("connecting...");
 
   // if you get a connection, report back via serial:
-  if (client.connect(server, 80)) {
+  if (myEthernet.connect(server, 80)) {
     Serial.println("connected");
     // Make a HTTP request:
     myEthernet.println("GET /makassar_automation/index.php/api/get_recent HTTP/1.1");
@@ -51,7 +53,15 @@ void setup() {
   }
 
    pinMode(relayPin, OUTPUT);
-   digitalWrite(relayPin, LOW);
+   digitalWrite(relayPin, 0);
+}
+
+void decideOnOrOff(String command){
+  if(command.equals("RELAY ON")){
+     digitalWrite(relayPin, 1);
+  }else if(command.equals("RELAY OFF")){
+     digitalWrite(relayPin, 0);
+  }
 }
 
 void loop() {
@@ -64,11 +74,7 @@ void loop() {
     if(res.equals("")==false){
       Serial.println("Response dari Server : ");
       Serial.println(res);
-      if(res.equals("RELAY ON"){
-        digitalWrite(in1, HIGH);
-      }else if(res.equals("RELAY OFF")){
-        digitalWrite(in1, LOW);
-      }
+      decideOnOrOff(res);
     }
   //    Serial.print(c);
   }
